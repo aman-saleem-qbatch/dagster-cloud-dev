@@ -1,0 +1,35 @@
+run_coordinator:
+  module: dagster.core.run_coordinator
+  class: QueuedRunCoordinator
+  config:
+    max_concurrent_runs: 50 
+run_storage:
+  module: dagster_postgres.run_storage
+  class: PostgresRunStorage
+  config:
+    postgres_db:
+      username: "jeff_local"
+      password: "password"
+      hostname: "127.0.0.1"
+      db_name:  "jeff_python_jobs"
+      port: 5432
+event_log_storage:
+  module: dagster_postgres.event_log
+  class: PostgresEventLogStorage
+  config:
+    postgres_db:
+      username: "jeff_local"
+      password: "password"
+      hostname: "127.0.0.1"
+      db_name:  "jeff_python_jobs"
+      port: 5432
+schedule_storage:
+  module: dagster_postgres.schedule_storage
+  class: PostgresScheduleStorage
+  config:
+    postgres_db:
+      username: "jeff_local"
+      password: "password"
+      hostname: "127.0.0.1"
+      db_name:  "jeff_python_jobs"
+      port: 5432

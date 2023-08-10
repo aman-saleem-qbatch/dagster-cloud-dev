@@ -1,0 +1,5 @@
+load_from:
+  - python_file:
+      relative_path: ./repositories/jobs_repo.py
+      working_directory: ./
+  
