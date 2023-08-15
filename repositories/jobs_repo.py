@@ -1,23 +1,25 @@
 from dagster import repository
 
-# from sensors import (
-   
-# )
-# from schedulers import (
-    
-# )
+from sensors import (
+    processing_sensor
+)
+from schedulers import (
+    listing_report
+)
 from jobs import (
-    amz_test_job
+    create_report_job,
+    amz_process_continues_reports
 )
 
 
 @repository
-def ss_jobs_repo():
+def repo():
     return [
         # Jobs
-       amz_test_job.amz_test_job
+        create_report_job.create_report_job,
+        amz_process_continues_reports.amz_process_continues_reports,
         # Schedulars
-       
+        listing_report.listing_report(),
         # Sensors
-        
+        processing_sensor.report_process_sensor
     ]
