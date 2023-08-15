@@ -18,7 +18,7 @@ def bulk_insert(table, columns, values):
     try:
         conn = db_client()
         cursor = conn.cursor()
-        chunk_size = 50
+        chunk_size = 500
         my_logger.info(f'TOTAL values: {len(values)}')
         for i in range(0, len(values), chunk_size):
             value = values[i: i + chunk_size]
