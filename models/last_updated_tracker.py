@@ -4,14 +4,12 @@ from ops.helpers.db_config import db_conn
 Model.set_connection_resolver(db_conn())
 
 
-class AmazonInventoryReport(Model):
-    __table__ = "amazon_inventory_report"
+class LastUpdatedTracker(Model):
+    __table__ = "last_updated_tracker"
     __fillable__ = [
         "id",
-        "sku",
-        "asin",
-        "price",
-        "quantity",
+        "tracker_type",
+        "last_updated_at",
         "created_at",
         "updated_at",
     ]
