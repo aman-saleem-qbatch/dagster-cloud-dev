@@ -7,7 +7,6 @@ Model.set_connection_resolver(db_conn())
 class AmazonAsinHelper(Model):
     __table__ = "amazon_asinhelper"
     __fillable__ = [
-        "id",
         "product_id",
         "variant_id",
         "asin",

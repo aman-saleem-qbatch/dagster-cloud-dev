@@ -7,10 +7,10 @@ Model.set_connection_resolver(db_conn())
 class CancelQueue(Model):
     __table__ = "cancel_queue"
     __fillable__ = [
-        "id",
         "cancel_id",
         "order_number",
         "order_item_number",
+        "sku",
         "skubana_cancel",
         "desktopshipper_cancel",
         "amazon_cancel",

@@ -13,15 +13,15 @@ Accordingly Using Sp Api GetOrders & GetOrderItems Endpoints
 @op
 def process_cancel_orders_details():
     try:
-        last_tracker = LastUpdatedTracker.where(
-            "tracker_type", "orders"
-        ).first()        
         # end_of_hour
         t_end_date = datetime.now()
         end_date = t_end_date.replace(minute=0, second=0, microsecond=0) - timedelta(minutes=3)
 
-        delta = timedelta(days=1)   
+        delta = timedelta(days=1)
 
+        last_tracker = LastUpdatedTracker.where(
+            "tracker_type", "orders"
+        ).first()
         if last_tracker:
             my_logger.info(f"Record existed |  {last_tracker.last_updated_at.timestamp()}")
             # start_of_hour
@@ -39,10 +39,7 @@ def process_cancel_orders_details():
         while start_date < end_date:
             posted_after = start_date.isoformat()
             start_date += delta
-            if start_date < end_date:
-                posted_before = (start_date).isoformat()
-            else:
-                posted_before = end_date.isoformat()
+            posted_before = end_date.isoformat()
 
             # Processing order details for specific interval            
             process_cancel_orders(posted_after, posted_before)
