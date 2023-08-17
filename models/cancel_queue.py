@@ -1,20 +1,29 @@
-from orator import Model
-from ops.helpers.db_config import db_conn
-
-Model.set_connection_resolver(db_conn())
+from sqlalchemy import Column, Text, Integer, DateTime
+from sqlalchemy.ext.declarative import declarative_base
 
 
-class CancelQueue(Model):
-    __table__ = "cancel_queue"
-    __fillable__ = [
-        "cancel_id",
-        "order_number",
-        "order_item_number",
-        "sku",
-        "skubana_cancel",
-        "desktopshipper_cancel",
-        "amazon_cancel",
-        "cancel_date",
-        "created_at",
-        "updated_at",
-    ]
+Base = declarative_base()
+
+
+class Cancel_Queue(Base):
+    __tablename__ = 'cancel_queue'
+    cancel_id = Column(
+        'cancel_id',
+        Integer,
+        primary_key=True,
+        autoincrement=True
+    )
+    order_number = Column('order_number', Text)
+    order_item_number = Column('order_item_number', Text)
+    sku = Column('sku', Text)
+    skubana_cancel = Column('skubana_cancel', Integer)
+    desktopshipper_cancel = Column('desktopshipper_cancel', Integer)
+    cancel_date = Column('cancel_date', DateTime)
+    created_at = Column('created_at', DateTime)
+    updated_at = Column('updated_at', DateTime)
+
+    def __init__(self, order_number):
+        self.order_number = order_number
+
+    def __repr__(self):
+        return "<Cancel_Queue: {} {}>".format(self.order_number, self.cancel_date)

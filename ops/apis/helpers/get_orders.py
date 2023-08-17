@@ -8,7 +8,7 @@ from ... import my_logger, retry_if_error, SP_EXCEPTIONS
 @retry(
     retry_on_exception=retry_if_error,
     stop_max_attempt_number=5,
-    wait_fixed=5000,
+    wait_fixed=30000,
 )
 def get_orders(posted_after, posted_before, marketplace_ids, order_statuses, fulfillment_channels):
     try:
