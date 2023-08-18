@@ -20,6 +20,7 @@ SP_EXCEPTIONS = (
     Exception
 )
 
+
 def retry_if_error(exception):
     """Return True if we should retry (in this case when it's an ThrottlingError or TokenExpiryError), False otherwise"""
     return isinstance(

@@ -9,6 +9,7 @@ from .. import my_logger
 
 conn = db_conn()
 
+
 @op
 def request_listing_report():
     data = {
