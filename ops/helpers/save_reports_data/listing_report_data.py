@@ -1,7 +1,11 @@
 from datetime import datetime
 import numpy as np
-from models.amazon_inventory_report import AmazonInventoryReport
+from ...helpers.db_config import db_conn
+from sqlalchemy import select, delete
+from models.amazon_inventory_report import Amazon_Inventory_Report
 from ops.helpers.bulk_insert import bulk_insert
+
+conn = db_conn()
 
 
 def save_listing_report(report_df, data):
@@ -35,11 +39,18 @@ def save_listing_report(report_df, data):
     inventory_list_keys.append("marketplace_id")
 
     # Truncating & Inserting Data
-    for inventories in AmazonInventoryReport.chunk(500):
+    stmt = (
+        select(Amazon_Inventory_Report.sku)
+        .limit(500)
+    )
+    res = conn.execute(stmt).fetchall()
+    while (len(res) > 0):
         skus_list = []
-        for inventory in inventories:
-            skus_list.append(inventory.sku)
-        AmazonInventoryReport.where_raw(f"sku IN {tuple(skus_list)}").delete()
+        for skus in res:
+            skus_list.append(skus.sku)
+        conn.execute(delete(Amazon_Inventory_Report).where(Amazon_Inventory_Report.sku.in_(tuple(skus_list))))
+        conn.commit()
+        res = conn.execute(stmt).fetchall()
 
     bulk_insert(
         "amazon_inventory_report", inventory_list_keys, inventory_list)

@@ -4,11 +4,14 @@ import os
 import time
 from dotenv import load_dotenv
 from datetime import datetime
-from models.reports_processing_consumer import ReportsProcessingConsumer
+from sqlalchemy import select, delete
+from ops.helpers.db_config import db_conn
+from models.reports_processing_consumer import Reports_Processing_Consumer
 from dagster import sensor, RunRequest, SkipReason, get_dagster_logger
 
 load_dotenv()
 
+conn = db_conn()
 my_logger = get_dagster_logger()
 
 
@@ -58,20 +61,30 @@ def report_process_sensor():
                 processed_report = report_data["payload"]["reportProcessingFinishedNotification"]
                 print(
                     f'\n processed_report["processingStatus"]: {processed_report["processingStatus"]}')
-                report_info = ReportsProcessingConsumer.where_raw(
-                    f"""report_id = "{processed_report['reportId']}" AND report_type = "{processed_report['reportType']}" """).first()
+                stmt = (
+                    select(Reports_Processing_Consumer)
+                    .where(
+                        Reports_Processing_Consumer.report_id == processed_report['reportId'],
+                        Reports_Processing_Consumer.report_type == processed_report['reportType']
+                    )
+                )
+                report_info = conn.execute(stmt).scalar()
                 if report_info:
                     report = {
                         "report_id": report_info.report_id,
                         "seller_id": report_info.seller_id,
                         "report_type": report_info.report_type,
                         "marketplace_id": report_info.marketplace_id,
-                        "created_at": report_info.created_at.to_datetime_string(),
-                        "updated_at": report_info.updated_at.to_datetime_string(),
+                        "created_at": report_info.created_at.isoformat(),
+                        "updated_at": report_info.updated_at.isoformat()
                     }
                     if processed_report["processingStatus"] == "CANCELLED" or processed_report["processingStatus"] == "FATAL":
-                        ReportsProcessingConsumer.where_raw(
-                            f"""report_id = "{processed_report['reportId']}" """).delete()
+                        stmt = (
+                            delete(Reports_Processing_Consumer)
+                            .where(Reports_Processing_Consumer.report_id == processed_report['reportId'])
+                        )
+                        conn.execute(stmt)
+                        conn.commit()
                     else:
                         my_logger.info(
                             f'\n processed_report["processingStatus"]: {processed_report["processingStatus"]}')

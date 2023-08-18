@@ -3,12 +3,15 @@ import csv
 import os
 import pandas as pd
 from dagster import op
-from models.reports_processing_consumer import ReportsProcessingConsumer
+from sqlalchemy import delete
+from ..helpers.db_config import db_conn
+from models.reports_processing_consumer import Reports_Processing_Consumer
 from ops.helpers.save_reports_data import (
     listing_report_data,
 )
 from .. import my_logger
 
+conn = db_conn()
 
 
 @op(required_resource_keys={"report_details"})
@@ -37,8 +40,12 @@ def save_report(context, file_name):
                 if os.path.exists(file_name):
                     print('Deleting the Processed File...')
                     os.remove(file_name)
-                ReportsProcessingConsumer.where_raw(
-                    f""" report_id = "{data['reportId']}" """).delete()
+                stmt = (
+                    delete(Reports_Processing_Consumer)
+                    .where(Reports_Processing_Consumer.report_id == data['reportId'])
+                )
+                conn.execute(stmt)
+                conn.commit()
         else:
             my_logger.info("No report matched")
             return True

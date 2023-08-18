@@ -3,9 +3,11 @@ from dagster import op
 from datetime import datetime
 from sp_api.api import ReportsV2
 from ops.helpers import credentials
-from models.reports_processing_consumer import ReportsProcessingConsumer
+from ops.helpers.db_config import db_conn
+from models.reports_processing_consumer import Reports_Processing_Consumer
 from .. import my_logger
 
+conn = db_conn()
 
 @op
 def request_listing_report():
@@ -25,15 +27,15 @@ def request_listing_report():
     if requested_response:
         my_logger.info(
             f"\n report_id: {requested_response.payload['reportId']}")
-        report_data = ReportsProcessingConsumer.insert(
-            {
-                "report_id": requested_response.payload["reportId"],
-                "seller_id": os.getenv("seller_id"),
-                "report_type": data["report_type"],
-                "marketplace_id": data["marketplace_id"],
-                "created_at": datetime.now(),
-                "updated_at": datetime.now(),
-            }
+        report_data = Reports_Processing_Consumer(
+            report_id=requested_response.payload["reportId"],
+            seller_id=os.getenv("seller_id"),
+            report_type=data["report_type"],
+            marketplace_id=data["marketplace_id"],
+            created_at=datetime.now(),
+            updated_at=datetime.now()
         )
-        my_logger.info(
-            f"\n report_data: {report_data}")
+        conn.add(report_data)
+        conn.commit()
+
+        my_logger.info(f"\n report_data: {report_data}")
