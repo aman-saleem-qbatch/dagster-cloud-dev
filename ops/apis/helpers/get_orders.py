@@ -42,7 +42,6 @@ def get_orders(posted_after, posted_before, marketplace_ids, order_statuses, ful
                     orders.extend(temp_orders)
         return orders
     except SP_EXCEPTIONS as e:
-        my_logger.error(str(e))
         resp = None
         my_logger.error(f"Exception in the while requesting Order | {str(e)}")
         raise e
