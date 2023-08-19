@@ -1,17 +1,22 @@
-from orator import Model
-from ops.helpers.db_config import db_conn
-
-Model.set_connection_resolver(db_conn())
+from sqlalchemy import Column, Text, Integer
+from sqlalchemy.ext.declarative import declarative_base
 
 
-class AmazonAsinHelper(Model):
-    __table__ = "amazon_asinhelper"
-    __fillable__ = [
-        "id",
-        "product_id",
-        "variant_id",
-        "asin",
-        "upc",
-        "created_at",
-        "updated_at",
-    ]
+Base = declarative_base()
+
+
+class Amazon_AsinHelper(Base):
+    __tablename__ = 'amazon_asinhelper'
+    product_id = Column('product_id', Integer, primary_key=True)
+    variant_id = Column('variant_id', Text)
+    asin = Column('asin', Text)
+    upc = Column('upc', Text)
+
+    def __init__(self, product_id, variant_id=None, upc=None, asin=None):
+        self.produc_id = product_id
+        self.variant_id = variant_id
+        self.upc = upc
+        self.asin = asin
+
+    def __repr__(self):
+        return "<Amazon_Asinhelper {}, {}, {}, {}>".format(self.product_id, self.variant_id, self.upc, self.asin)

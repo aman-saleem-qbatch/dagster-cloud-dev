@@ -1,15 +1,26 @@
-from orator import Model
-from ops.helpers.db_config import db_conn
-
-Model.set_connection_resolver(db_conn())
+from sqlalchemy import Column, Text, Integer, DateTime
+from sqlalchemy.ext.declarative import declarative_base
 
 
-class LastUpdatedTracker(Model):
-    __table__ = "last_updated_tracker"
-    __fillable__ = [
-        "id",
-        "tracker_type",
-        "last_updated_at",
-        "created_at",
-        "updated_at",
-    ]
+Base = declarative_base()
+
+
+class Last_Updated_Tracker(Base):
+    __tablename__ = 'last_updated_tracker'
+    id = Column(
+        'id',
+        Integer,
+        primary_key=True,
+        autoincrement=True
+    )
+    tracker_type = Column('tracker_type', Text)
+    last_updated_at = Column('last_updated_at', DateTime)
+    created_at = Column('created_at', DateTime)
+    updated_at = Column('updated_at', DateTime)
+
+    def __init__(self, tracker_type, last_updated_at):
+        self.tracker_type = tracker_type
+        self.last_updated_at = last_updated_at
+
+    def __repr__(self):
+        return "<Last_Updated_Tracker: {} {}>".format(self.tracker_type, self.last_updated_at)
