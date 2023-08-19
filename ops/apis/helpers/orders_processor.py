@@ -83,13 +83,18 @@ def process_cancel_orders(posted_after, posted_before):
                         )
                     )
                     conn.execute(stmt)
+                    conn.commit()
                 else:
                     stmt = (
                         update(LastUpdatedTracker)
                         .where(LastUpdatedTracker.tracker_type == "orders")
-                        .values(last_updated_at=datetime.strptime(order.get('PurchaseDate'), "%Y-%m-%dT%H:%M:%SZ"))
+                        .values(
+                            last_updated_at=datetime.strptime(order.get('PurchaseDate'), "%Y-%m-%dT%H:%M:%SZ"),
+                            updated_at=datetime.now()
+                        )
                     )
                     conn.execute(stmt)
+                    conn.commit()
             return True
         else:
             my_logger.error(f"No Orders")
