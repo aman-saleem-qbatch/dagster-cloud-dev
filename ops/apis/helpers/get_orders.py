@@ -8,7 +8,7 @@ from ... import my_logger, retry_if_error, SP_EXCEPTIONS
 @retry(
     retry_on_exception=retry_if_error,
     stop_max_attempt_number=5,
-    wait_fixed=30000,
+    wait_fixed=5000,
 )
 def get_orders(posted_after, posted_before, marketplace_ids, order_statuses, fulfillment_channels):
     try:
@@ -19,7 +19,6 @@ def get_orders(posted_after, posted_before, marketplace_ids, order_statuses, ful
             OrderStatuses=order_statuses,
             FulfillmentChannels=fulfillment_channels,
         )
-
         orders = []
         if resp:
             orders = resp.payload["Orders"] if resp.payload["Orders"] else []
@@ -41,7 +40,6 @@ def get_orders(posted_after, posted_before, marketplace_ids, order_statuses, ful
                     )
                     temp_orders = resp.payload["Orders"] if resp.payload["Orders"] else []
                     orders.extend(temp_orders)
-
         return orders
     except SP_EXCEPTIONS as e:
         my_logger.error(str(e))

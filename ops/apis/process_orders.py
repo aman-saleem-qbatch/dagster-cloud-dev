@@ -1,11 +1,10 @@
-from .. import my_logger
 from dagster import op
 from datetime import datetime, timedelta, time as dtime
-from models.last_updated_tracker import Last_Updated_Tracker
 from sqlalchemy import select
-from ..helpers.db_config import db_conn
+from models.last_updated_tracker import LastUpdatedTracker
 from ops.apis.helpers.orders_processor import process_cancel_orders
-
+from .. import my_logger
+from ..helpers.db_config import db_conn
 
 conn = db_conn()
 
@@ -26,8 +25,8 @@ def process_cancel_orders_details():
         delta = timedelta(days=1)
 
         stmt = (
-            select(Last_Updated_Tracker.last_updated_at)
-            .where(Last_Updated_Tracker.tracker_type == 'orders')
+            select(LastUpdatedTracker.last_updated_at)
+            .where(LastUpdatedTracker.tracker_type == 'orders')
         )
         last_tracker = conn.execute(stmt).scalar()
         if last_tracker:

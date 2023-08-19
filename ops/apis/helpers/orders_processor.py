@@ -1,12 +1,12 @@
 import time
 from datetime import datetime
-from ... import my_logger, SP_EXCEPTIONS
-from ...helpers.db_config import db_conn
-from models.cancel_queue import Cancel_Queue
-from models.last_updated_tracker import Last_Updated_Tracker
+from models.cancel_queue import CancelQueue
+from models.last_updated_tracker import LastUpdatedTracker
 from sqlalchemy import insert, update, select
 from .get_orders import get_orders
 from .get_orders_items import get_orders_items
+from ... import my_logger, SP_EXCEPTIONS
+from ...helpers.db_config import db_conn
 
 conn = db_conn()
 
@@ -39,18 +39,19 @@ def process_cancel_orders(posted_after, posted_before):
                     my_logger.info(f"order_items {len(order_items)}")
                     for order_item in order_items:
                         is_buyer_requested_cancellation = order_item.get("BuyerRequestedCancel").get(
-                            "IsBuyerRequestedCancel") if order_item.get("BuyerRequestedCancel") else "false"
+                            "IsBuyerRequestedCancel"
+                        ) if order_item.get("BuyerRequestedCancel") else "false"
                         # Updating the Cancel Queue
-                        if is_buyer_requested_cancellation == "false":
-                            cqs = conn.query(Cancel_Queue).where(
-                                Cancel_Queue.order_number == order.get('AmazonOrderId'),
-                                Cancel_Queue.order_item_number == order_item.get('OrderItemId'),
-                                Cancel_Queue.sku == order_item.get('SellerSKU')
+                        if is_buyer_requested_cancellation != "false":
+                            cqs = conn.query(CancelQueue).where(
+                                CancelQueue.order_number == order.get('AmazonOrderId'),
+                                CancelQueue.order_item_number == order_item.get('OrderItemId'),
+                                CancelQueue.sku == order_item.get('SellerSKU')
                             ).first()
                             if not cqs:
-                                cq = Cancel_Queue(order.get('AmazonOrderId'))
-                                cq.order_item_number = order_item.get('OrderItemId')
-                                cq.sku = order_item.get('SellerSKU')
+                                cq = CancelQueue(order.get('AmazonOrderId',''))
+                                cq.order_item_number = order_item.get('OrderItemId','')
+                                cq.sku = order_item.get('SellerSKU','')
                                 cq.cancel_date = datetime.now()
                                 cq.desktopshipper_cancel = 0
                                 cq.skubana_cancel = 0
@@ -60,19 +61,20 @@ def process_cancel_orders(posted_after, posted_before):
                                 conn.commit()
                             else:
                                 my_logger.debug(
-                                    f"Order ID: {order.get('AmazonOrderId')} is already in the queue, skipping.")
-
+                                    f"Order ID: {order.get('AmazonOrderId')} is already in the queue, skipping."
+                                )
                 my_logger.info(
-                    f'LastUpdateDate | {order.get("LastUpdateDate")}')
+                    f'LastUpdateDate | {order.get("LastUpdateDate")}'
+                )
                 # Updating Order Tracker
                 stmt = (
-                    select(Last_Updated_Tracker)
-                    .where(Last_Updated_Tracker.tracker_type == 'orders')
+                    select(LastUpdatedTracker)
+                    .where(LastUpdatedTracker.tracker_type == 'orders')
                 )
                 last_tracker = conn.execute(stmt).first()
                 if not last_tracker:
                     stmt = (
-                        insert(Last_Updated_Tracker)
+                        insert(LastUpdatedTracker)
                         .values(
                             tracker_type="orders",
                             last_updated_at=datetime.strptime(order.get('LastUpdateDate'), "%Y-%m-%dT%H:%M:%SZ"),
@@ -83,8 +85,8 @@ def process_cancel_orders(posted_after, posted_before):
                     conn.execute(stmt)
                 else:
                     stmt = (
-                        update(Last_Updated_Tracker)
-                        .where(Last_Updated_Tracker.tracker_type == "orders")
+                        update(LastUpdatedTracker)
+                        .where(LastUpdatedTracker.tracker_type == "orders")
                         .values(last_updated_at=datetime.strptime(order.get('PurchaseDate'), "%Y-%m-%dT%H:%M:%SZ"))
                     )
                     conn.execute(stmt)

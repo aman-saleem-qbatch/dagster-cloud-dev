@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-class Last_Updated_Tracker(Base):
+class LastUpdatedTracker(Base):
     __tablename__ = 'last_updated_tracker'
     id = Column(
         'id',
@@ -23,4 +23,4 @@ class Last_Updated_Tracker(Base):
         self.last_updated_at = last_updated_at
 
     def __repr__(self):
-        return "<Last_Updated_Tracker: {} {}>".format(self.tracker_type, self.last_updated_at)
+        return "<LastUpdatedTracker: {} {}>".format(self.tracker_type, self.last_updated_at)

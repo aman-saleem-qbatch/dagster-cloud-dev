@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-class Cancel_Queue(Base):
+class CancelQueue(Base):
     __tablename__ = 'cancel_queue'
     cancel_id = Column(
         'cancel_id',
@@ -26,4 +26,4 @@ class Cancel_Queue(Base):
         self.order_number = order_number
 
     def __repr__(self):
-        return "<Cancel_Queue: {} {}>".format(self.order_number, self.cancel_date)
+        return "<CancelQueue: {} {}>".format(self.order_number, self.cancel_date)

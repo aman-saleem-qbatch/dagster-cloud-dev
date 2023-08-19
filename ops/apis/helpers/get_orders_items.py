@@ -14,8 +14,9 @@ def get_orders_items(order_id):
     try:
         resp = Orders(
             credentials=credentials.sp_credentials()
-        ).get_order_items(order_id=order_id)
-
+        ).get_order_items(
+            order_id=order_id
+        )
         order_items = []
         if resp:
             order_items = resp.payload["OrderItems"] if resp.payload["OrderItems"] else []
@@ -37,7 +38,6 @@ def get_orders_items(order_id):
                     )
                     temp_orders_items = resp.payload["OrderItems"] if resp.payload["OrderItems"] else []
                     order_items.extend(temp_orders_items)
-
         return order_items
     except SP_EXCEPTIONS as e:
         my_logger.error(

@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-class Amazon_AsinHelper(Base):
+class AmazonAsinHelper(Base):
     __tablename__ = 'amazon_asinhelper'
     product_id = Column('product_id', Integer, primary_key=True)
     variant_id = Column('variant_id', Text)
@@ -19,4 +19,4 @@ class Amazon_AsinHelper(Base):
         self.asin = asin
 
     def __repr__(self):
-        return "<Amazon_Asinhelper {}, {}, {}, {}>".format(self.product_id, self.variant_id, self.upc, self.asin)
+        return "<AmazonAsinHelper {}, {}, {}, {}>".format(self.product_id, self.variant_id, self.upc, self.asin)
