@@ -19,6 +19,7 @@ class CancelQueue(Base):
     skubana_cancel = Column('skubana_cancel', Integer)
     desktopshipper_cancel = Column('desktopshipper_cancel', Integer)
     amazon_cancel = Column('amazon_cancel', Integer)
+    buyer_cancellation_reason = Column('buyer_cancellation_reason', Text)
     cancel_date = Column('cancel_date', DateTime)
     created_at = Column('created_at', DateTime)
     updated_at = Column('updated_at', DateTime)
