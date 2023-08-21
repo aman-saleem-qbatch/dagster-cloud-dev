@@ -41,6 +41,9 @@ def process_cancel_orders(posted_after, posted_before):
                         is_buyer_requested_cancellation = order_item.get("BuyerRequestedCancel").get(
                             "IsBuyerRequestedCancel"
                         ) if order_item.get("BuyerRequestedCancel") else "false"
+                        buyer_cancellation_reason = order_item.get("BuyerRequestedCancel").get(
+                            "BuyerCancelReason"
+                        ) if order_item.get("BuyerRequestedCancel") else None   
                         # Updating the Cancel Queue
                         if is_buyer_requested_cancellation != "false":
                             cqs = conn.query(CancelQueue).where(
@@ -55,6 +58,8 @@ def process_cancel_orders(posted_after, posted_before):
                                 cq.cancel_date = datetime.now()
                                 cq.desktopshipper_cancel = 0
                                 cq.skubana_cancel = 0
+                                cq.amazon_cancel = 0
+                                cq.buyer_cancellation_reason = buyer_cancellation_reason
                                 cq.created_at = datetime.now(),
                                 cq.updated_at = datetime.now(),
                                 conn.merge(cq)
