@@ -1,6 +1,5 @@
 import os
 
-
 def sp_credentials():
     return dict(
         refresh_token=os.getenv("refresh_token"),
