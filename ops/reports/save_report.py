@@ -45,5 +45,6 @@ def save_report(context, file_name):
             )
             conn.execute(stmt)
             conn.commit()
+            conn.close()
 
         return True

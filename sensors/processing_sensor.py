@@ -121,7 +121,8 @@ def report_process_sensor():
 
         my_logger.info(
             f'REQUEST MESSAGES COUNT: {count} and PROCESSED MESSAGES COUNT : {x}')
-
+        
+        conn.close()    
     except Exception as e:
         my_logger.error(e)
         raise e

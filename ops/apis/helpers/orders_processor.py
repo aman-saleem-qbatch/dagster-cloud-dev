@@ -95,6 +95,7 @@ def process_cancel_orders(posted_after, posted_before):
                     )
                     conn.execute(stmt)
                     conn.commit()
+                    conn.close()
             return True
         else:
             my_logger.error(f"No Orders")

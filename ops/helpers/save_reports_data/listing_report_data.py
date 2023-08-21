@@ -55,6 +55,8 @@ def save_listing_report(report_df, data):
         conn.commit()
         res = conn.execute(stmt).fetchall()
 
+    conn.close()
+
     bulk_insert(
         "amazon_inventory_report", inventory_list_keys, inventory_list)
     return True
