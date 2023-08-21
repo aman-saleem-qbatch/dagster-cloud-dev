@@ -55,7 +55,6 @@ def process_cancel_orders_details():
             # Processing order details for specific interval
             process_cancel_orders(posted_after, posted_before)
 
-        conn.close()
     except Exception as e:
         my_logger.error(f"error {e}")
         return False
