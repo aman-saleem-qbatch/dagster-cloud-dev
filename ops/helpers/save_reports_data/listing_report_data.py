@@ -11,18 +11,12 @@ conn = db_conn()
 def save_listing_report(report_df, data):
     report_data = report_df.filter(
         [
-            "seller-sku",
+            "sku",
             "price",
             "quantity",
-            "asin1"
+            "asin"
         ]
     )
-    report_data.columns = [
-        "sku",
-        "price",
-        "quantity",
-        "asin"
-    ]
     report_data.replace({np.nan: "!"}, inplace=True)
     report_data.replace({"!": ""}, inplace=True)
     report_dict = report_data.to_dict("records")
