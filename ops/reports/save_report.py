@@ -14,6 +14,17 @@ from .. import my_logger
 conn = db_conn()
 
 
+def delete_record(file_name, data):
+    if os.path.exists(file_name):
+        my_logger.info("Deleting the Processed File...")
+        os.remove(file_name)
+    stmt = delete(ReportsProcessingConsumer).where(
+        ReportsProcessingConsumer.report_id == data["reportId"]
+    )
+    conn.execute(stmt)
+    conn.commit()
+
+
 @op(required_resource_keys={"report_details"})
 def save_report(context, file_name):
     if file_name:
@@ -34,16 +45,11 @@ def save_report(context, file_name):
         report_df = pd.read_csv(tsv_file, sep="\t", dtype=dtype)
 
         my_logger.info("Report_type:   GET_MERCHANT_LISTINGS_ALL_DATA")
-        resp = listing_report_data.save_listing_report(report_df, data)
-        if resp:
-            if os.path.exists(file_name):
-                print('Deleting the Processed File...')
-                os.remove(file_name)
-            stmt = (
-                delete(ReportsProcessingConsumer)
-                .where(ReportsProcessingConsumer.report_id == data['reportId'])
-            )
-            conn.execute(stmt)
-            conn.commit()
-
-        return True
+        try:
+            resp = listing_report_data.save_listing_report(report_df, data)
+            if resp:
+                delete_record(file_name, data)
+            return True
+        except Exception as e:
+            delete_record(file_name, data)
+            my_logger.error(f"Error in Saving Report {e}")
