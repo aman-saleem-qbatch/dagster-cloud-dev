@@ -100,7 +100,7 @@ def report_process_sensor():
                                         }
                                     },
                                 },
-                                tags={report.get("report_type"): report.get("seller_id")},
+                                tags={"job_type": 'amz_process_continues_reports' }
                             )
                             x = x+1
                     delete_entities.append(
