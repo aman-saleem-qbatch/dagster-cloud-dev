@@ -69,7 +69,7 @@ def process_cancel_orders(posted_after, posted_before):
                                     f"Order ID: {order.get('AmazonOrderId')} is already in the queue, skipping."
                                 )
                 my_logger.info(
-                    f'LastUpdateDate | {order.get("LastUpdateDate")}'
+                    f'PurchaseDate | {order.get("PurchaseDate")}'
                 )
                 # Updating Order Tracker
                 stmt = (
@@ -82,7 +82,7 @@ def process_cancel_orders(posted_after, posted_before):
                         insert(LastUpdatedTracker)
                         .values(
                             tracker_type="orders",
-                            last_updated_at=datetime.strptime(order.get('LastUpdateDate'), "%Y-%m-%dT%H:%M:%SZ"),
+                            last_updated_at=datetime.strptime(order.get('PurchaseDate'), "%Y-%m-%dT%H:%M:%SZ"),
                             created_at=datetime.now(),
                             updated_at=datetime.now()
                         )
