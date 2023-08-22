@@ -20,7 +20,7 @@ def process_cancel_orders_details():
         # end_of_hour
         t_end_date = datetime.now()
         end_date = t_end_date.replace(
-            minute=0, second=0, microsecond=0) - timedelta(hours=5)
+            minute=0, second=0, microsecond=0) - timedelta(minutes=5)
 
         delta = timedelta(days=1)
 
