@@ -9,7 +9,7 @@ from ops.reports.get_report_document import get_report_document
     resource_defs={
         "report_details": processed_report_details.get_report_details},
 )
-def amz_process_continues_reports():
+def amz_process_done_reports():
     file_name = get_report_document()
     save_report(file_name)
-    print("amz_process_continues_reports FINISHED")
+    print("amz_process_done_reports FINISHED")

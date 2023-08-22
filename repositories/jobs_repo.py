@@ -2,8 +2,8 @@ from dagster import repository
 
 from jobs import (
     amz_cancel_orders_downloader,
-    amz_request_listing_report_job,
-    amz_process_continues_reports
+    amz_request_open_listing_report,
+    amz_process_done_reports
 )
 from schedulers import (
     listing_report,
@@ -18,8 +18,8 @@ from sensors import (
 def repo():
     return [
         # Jobs
-        amz_request_listing_report_job.amz_request_listing_report_job,
-        amz_process_continues_reports.amz_process_continues_reports,
+        amz_request_open_listing_report.amz_request_open_listing_report,
+        amz_process_done_reports.amz_process_done_reports,
         amz_cancel_orders_downloader.amz_cancel_orders_downloader,
         # ----------------------------------------------------------
         # Schedulers
