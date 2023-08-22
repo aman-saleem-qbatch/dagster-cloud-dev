@@ -17,9 +17,9 @@ conn = db_conn()
     wait_fixed=5000,
 )
 @op
-def request_listing_report():
+def request_open_listing_report():
     data = {
-        "report_type": 'GET_MERCHANT_LISTINGS_ALL_DATA',
+        "report_type": 'GET_FLAT_FILE_OPEN_LISTINGS_DATA',
         "marketplace_id": ["ATVPDKIKX0DER"]
     }
     try:

@@ -15,7 +15,7 @@ conn = db_conn()
 my_logger = get_dagster_logger()
 
 
-@sensor(job_name="amz_process_continues_reports", minimum_interval_seconds=30)
+@sensor(job_name="amz_process_done_reports", minimum_interval_seconds=30)
 def report_process_sensor():
     try:
         sqs_client = boto3.client(
@@ -100,7 +100,7 @@ def report_process_sensor():
                                         }
                                     },
                                 },
-                                tags={"job_type": 'amz_process_continues_reports' }
+                                tags={"job_type": 'amz_process_done_reports' }
                             )
                             x = x+1
                     delete_entities.append(
