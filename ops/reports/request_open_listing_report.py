@@ -45,5 +45,3 @@ def request_open_listing_report():
         )
         conn.add(report_data)
         conn.commit()
-
-        my_logger.info(f"\n report_data: {report_data}")

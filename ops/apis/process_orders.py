@@ -30,13 +30,12 @@ def process_cancel_orders_details():
         )
         last_tracker = conn.execute(stmt).scalar()
         if last_tracker:
-            my_logger.info(f"Record existed |  {last_tracker}")
             # start_of_hour
             start_date = last_tracker.replace(
                 minute=0, second=0, microsecond=0)
         else:
             my_logger.info(
-                "Record not existed running job from the start of the month")
+                "running job 1st time from the start of the month")
             # start_of_hour and start of the month
             temp_date = datetime.combine(datetime.now(), dtime.min)
             start_date = temp_date.replace(day=1)
