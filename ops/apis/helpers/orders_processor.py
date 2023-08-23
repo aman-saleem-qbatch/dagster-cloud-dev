@@ -31,12 +31,13 @@ def process_cancel_orders(posted_after, posted_before):
         )
         if len(orders) > 0:
             my_logger.info(f"orders length {len(orders)}")
+            last_purchase_date = posted_before
             for order in orders:
                 time.sleep(3)
                 order_items = get_orders_items(
                     order_id=order.get("AmazonOrderId"))
                 if order_items:
-                    my_logger.info(f"order_items {len(order_items)}")
+                    my_logger.info(f"order_id {order.get('AmazonOrderId')} \n order_items {len(order_items)}")
                     for order_item in order_items:
                         is_buyer_requested_cancellation = order_item.get("BuyerRequestedCancel").get(
                             "IsBuyerRequestedCancel"
@@ -52,6 +53,7 @@ def process_cancel_orders(posted_after, posted_before):
                                 CancelQueue.sku == order_item.get('SellerSKU')
                             ).first()
                             if not cqs:
+                                my_logger.info(f"Sku {order_item.get('SellerSKU','')} is cancelled and saving in db.")
                                 cq = CancelQueue(order.get('AmazonOrderId',''))
                                 cq.order_item_number = order_item.get('OrderItemId','')
                                 cq.sku = order_item.get('SellerSKU','')
@@ -66,40 +68,39 @@ def process_cancel_orders(posted_after, posted_before):
                                 conn.commit()
                             else:
                                 my_logger.debug(
-                                    f"Order ID: {order.get('AmazonOrderId')} is already in the queue, skipping."
+                                    f"Sku {order_item.get('SellerSKU','')} is already in the queue, skipping."
                                 )
-                my_logger.info(
-                    f'PurchaseDate | {order.get("PurchaseDate")}'
-                )
-                # Updating Order Tracker
+                last_purchase_date = order.get('PurchaseDate')
+
+            # Updating Order Tracker
+            stmt = (
+                select(LastUpdatedTracker)
+                .where(LastUpdatedTracker.tracker_type == 'orders')
+            )
+            last_tracker = conn.execute(stmt).first()
+            if not last_tracker:
                 stmt = (
-                    select(LastUpdatedTracker)
-                    .where(LastUpdatedTracker.tracker_type == 'orders')
+                    insert(LastUpdatedTracker)
+                    .values(
+                        tracker_type="orders",
+                        last_updated_at=datetime.strptime(last_purchase_date, "%Y-%m-%dT%H:%M:%SZ"),
+                        created_at=datetime.now(),
+                        updated_at=datetime.now()
+                    )
                 )
-                last_tracker = conn.execute(stmt).first()
-                if not last_tracker:
-                    stmt = (
-                        insert(LastUpdatedTracker)
-                        .values(
-                            tracker_type="orders",
-                            last_updated_at=datetime.strptime(order.get('PurchaseDate'), "%Y-%m-%dT%H:%M:%SZ"),
-                            created_at=datetime.now(),
-                            updated_at=datetime.now()
-                        )
+                conn.execute(stmt)
+                conn.commit()
+            else:
+                stmt = (
+                    update(LastUpdatedTracker)
+                    .where(LastUpdatedTracker.tracker_type == "orders")
+                    .values(
+                        last_updated_at=datetime.strptime(last_purchase_date, "%Y-%m-%dT%H:%M:%SZ"),
+                        updated_at=datetime.now()
                     )
-                    conn.execute(stmt)
-                    conn.commit()
-                else:
-                    stmt = (
-                        update(LastUpdatedTracker)
-                        .where(LastUpdatedTracker.tracker_type == "orders")
-                        .values(
-                            last_updated_at=datetime.strptime(order.get('PurchaseDate'), "%Y-%m-%dT%H:%M:%SZ"),
-                            updated_at=datetime.now()
-                        )
-                    )
-                    conn.execute(stmt)
-                    conn.commit()
+                )
+                conn.execute(stmt)
+                conn.commit()
             return True
         else:
             my_logger.error(f"No Orders")
@@ -107,5 +108,4 @@ def process_cancel_orders(posted_after, posted_before):
     except SP_EXCEPTIONS as e:
         my_logger.error(str(e))
         orders = None
-        my_logger.error(f"Exception in request_report | {str(e)}")
         raise e

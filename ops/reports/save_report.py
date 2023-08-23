@@ -31,7 +31,6 @@ def save_report(context, file_name):
         result = context.resources.report_details
         data = json.loads(result["data"])
         tsv_file = open(file_name, encoding="windows-1252")
-        my_logger.info(f"TSV FILE:  {tsv_file} ")
         with open(file_name, "r", encoding="latin1") as f:
             reader = csv.reader(f)
             header = next(reader)
@@ -43,8 +42,6 @@ def save_report(context, file_name):
                 dtype = None
 
         report_df = pd.read_csv(tsv_file, sep="\t", dtype=dtype)
-
-        my_logger.info("Report_type:   GET_MERCHANT_LISTINGS_ALL_DATA")
         try:
             resp = listing_report_data.save_listing_report(report_df, data)
             if resp:

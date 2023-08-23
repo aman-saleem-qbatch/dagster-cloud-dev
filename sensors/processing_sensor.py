@@ -117,7 +117,7 @@ def report_process_sensor():
                     my_logger.info("batch_delete res: ", batch_delete)
 
             else:
-                my_logger.info("No message")
+                my_logger.info("No message in sqs queue")
 
         my_logger.info(
             f'REQUEST MESSAGES COUNT: {count} and PROCESSED MESSAGES COUNT : {x}')
