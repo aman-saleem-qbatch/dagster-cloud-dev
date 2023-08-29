@@ -18,30 +18,29 @@ conn = db_conn()
 )
 @op
 def request_open_listing_report():
-    data = {
-        "report_type": 'GET_FLAT_FILE_OPEN_LISTINGS_DATA',
-        "marketplace_id": ["ATVPDKIKX0DER"]
-    }
     try:
+        data = {
+            "report_type": 'GET_FLAT_FILE_OPEN_LISTINGS_DATA',
+            "marketplace_id": ["ATVPDKIKX0DER"]
+        }
         requested_response = ReportsV2(credentials=credentials.sp_credentials()).create_report(
             reportType=data["report_type"],
             marketplaceIds=data["marketplace_id"]
         )
+        if requested_response:
+            my_logger.info(
+                f"\n report_id: {requested_response.payload['reportId']}")
+            report_data = ReportsProcessingConsumer(
+                report_id=requested_response.payload["reportId"],
+                seller_id=os.getenv("seller_id"),
+                report_type=data["report_type"],
+                marketplace_id=data["marketplace_id"],
+                created_at=datetime.now(),
+                updated_at=datetime.now()
+            )
+            conn.add(report_data)
+            conn.commit()
+
     except SP_EXCEPTIONS as e:
         my_logger.error(str(e))
-        requested_response = None
         raise e
-
-    if requested_response:
-        my_logger.info(
-            f"\n report_id: {requested_response.payload['reportId']}")
-        report_data = ReportsProcessingConsumer(
-            report_id=requested_response.payload["reportId"],
-            seller_id=os.getenv("seller_id"),
-            report_type=data["report_type"],
-            marketplace_id=data["marketplace_id"],
-            created_at=datetime.now(),
-            updated_at=datetime.now()
-        )
-        conn.add(report_data)
-        conn.commit()

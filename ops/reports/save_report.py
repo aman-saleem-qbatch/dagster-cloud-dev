@@ -27,26 +27,27 @@ def delete_record(file_name, data):
 
 @op(required_resource_keys={"report_details"})
 def save_report(context, file_name):
-    if file_name:
-        result = context.resources.report_details
-        data = json.loads(result["data"])
-        tsv_file = open(file_name, encoding="windows-1252")
-        with open(file_name, "r", encoding="latin1") as f:
-            reader = csv.reader(f)
-            header = next(reader)
-            print("header", header)
-            header = header[0].split("\t")
-            if "seller-sku" in header:
-                dtype = {"seller-sku": str}
-            else:
-                dtype = None
+    try:
+        if file_name:
+            result = context.resources.report_details
+            data = json.loads(result["data"])
+            tsv_file = open(file_name, encoding="windows-1252")
+            with open(file_name, "r", encoding="latin1") as f:
+                reader = csv.reader(f)
+                header = next(reader)
+                print("header", header)
+                header = header[0].split("\t")
+                if "seller-sku" in header:
+                    dtype = {"seller-sku": str}
+                else:
+                    dtype = None
 
-        report_df = pd.read_csv(tsv_file, sep="\t", dtype=dtype)
-        try:
+            report_df = pd.read_csv(tsv_file, sep="\t", dtype=dtype)
             resp = listing_report_data.save_listing_report(report_df, data)
             if resp:
                 delete_record(file_name, data)
             return True
-        except Exception as e:
-            delete_record(file_name, data)
-            my_logger.error(f"Error in Saving Report {e}")
+    except Exception as e:
+        delete_record(file_name, data)
+        my_logger.error(f"Error in Saving Report {e}")
+        raise e
