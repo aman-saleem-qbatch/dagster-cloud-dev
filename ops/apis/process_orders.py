@@ -39,7 +39,6 @@ def process_cancel_orders_details():
             # start_of_hour and start of the month
             temp_date = datetime.combine(datetime.now(), dtime.min)
             start_date = temp_date.replace(day=1)
-
         my_logger.info(
             f"TOTAL SYNCABLE TIME {start_date.isoformat()} -  {end_date.isoformat()}"
         )
@@ -50,10 +49,9 @@ def process_cancel_orders_details():
                 posted_before = (start_date).isoformat()
             else:
                 posted_before = end_date.isoformat()
-
             # Processing order details for specific interval
             process_cancel_orders(posted_after, posted_before)
 
     except Exception as e:
         my_logger.error(f"error {e}")
-        return False
+        raise e
