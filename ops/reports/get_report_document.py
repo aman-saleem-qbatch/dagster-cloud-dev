@@ -30,7 +30,7 @@ def get_report_document(context):
             if report.payload:
                 return file_name
             else:
-                return 'None'
+                return None
         else:
             my_logger.info('No report found')
             return False
