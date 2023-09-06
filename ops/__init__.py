@@ -16,6 +16,7 @@ load_dotenv()
 my_logger = get_dagster_logger()
 
 SP_EXCEPTIONS = (
+    Exception,
     SellingApiRequestThrottledException,
     SellingApiForbiddenException,
     SellingApiServerException,
