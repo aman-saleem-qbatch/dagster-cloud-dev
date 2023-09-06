@@ -49,15 +49,16 @@ def process_cancel_orders(posted_after, posted_before):
                         if is_buyer_requested_cancellation != "false":
                             cqs = conn.query(CancelQueue).where(
                                 CancelQueue.order_number == order.get('AmazonOrderId'),
-                                CancelQueue.order_item_number == order_item.get('OrderItemId'),
+                                CancelQueue.order_item_id == order_item.get('OrderItemId'),
                                 CancelQueue.sku == order_item.get('SellerSKU')
                             ).first()
                             if not cqs:
                                 my_logger.info(f"Sku {order_item.get('SellerSKU','')} is cancelled and saving in db.")
                                 cq = CancelQueue(order.get('AmazonOrderId',''))
-                                cq.order_item_number = order_item.get('OrderItemId','')
+                                cq.order_item_id = order_item.get('OrderItemId','')
                                 cq.sku = order_item.get('SellerSKU','')
-                                cq.cancel_date = datetime.now()
+                                cq.buyer_cancel_date = datetime.now()
+                                cq.purchase_date = datetime.strptime(order.get('PurchaseDate'), "%Y-%m-%dT%H:%M:%SZ")
                                 cq.desktopshipper_cancel = 0
                                 cq.skubana_cancel = 0
                                 cq.amazon_cancel = 0
