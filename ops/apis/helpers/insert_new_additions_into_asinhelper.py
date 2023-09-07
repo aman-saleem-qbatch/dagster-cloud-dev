@@ -26,7 +26,7 @@ def insert_new_additions_into_asinhelper():
 				;
 		''')
         missing_products = conn.execute(sql, {}).all()
-        my_logger.info('\n\n missing products', len(missing_products))
+        my_logger.info(f'\n\n missing products {len(missing_products)}')
         
         result = []
         for product in missing_products:
@@ -40,7 +40,7 @@ def insert_new_additions_into_asinhelper():
         my_logger.info("Inserted New Entries into Amazon_AsinHelper Table: {} Rows"
 			.format(len(result))
 		)
-
+        return True 
     except Exception as e:
         my_logger.error(f"Exception in while Inserted New Entries into Amazon_AsinHelper Table  | {str(e)}")
         raise e
