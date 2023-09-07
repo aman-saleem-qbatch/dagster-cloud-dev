@@ -63,6 +63,7 @@ def process_cancels(context):
                     .where(CancelQueue.order_number == order_number)
                     .values(
                         processing_status='IN PROGRESS',
+                        amazon_cancel_date = datetime.now(),
                         updated_at=datetime.now()
                     )
                 )
