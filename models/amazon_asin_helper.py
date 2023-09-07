@@ -13,7 +13,7 @@ class AmazonAsinHelper(Base):
     upc = Column('upc', Text)
 
     def __init__(self, product_id, variant_id=None, upc=None, asin=None):
-        self.produc_id = product_id
+        self.product_id = product_id
         self.variant_id = variant_id
         self.upc = upc
         self.asin = asin

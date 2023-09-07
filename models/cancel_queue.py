@@ -25,6 +25,9 @@ class CancelQueue(Base):
     acknowledged_cancel_date_skubana = Column('acknowledged_cancel_date_skubana', DateTime)
     acknowledged_cancel_date_dts = Column('acknowledged_cancel_date_dts', DateTime)
     amazon_cancel_date = Column('amazon_cancel_date', DateTime)
+    processing_status = Column('processing_status', Text)
+    last_processed_at = Column('last_processed_at', DateTime)
+    error_message = Column('error_message', Text)
     created_at = Column('created_at', DateTime)
     updated_at = Column('updated_at', DateTime)
 
