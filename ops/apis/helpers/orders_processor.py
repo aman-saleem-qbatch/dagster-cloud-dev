@@ -59,10 +59,12 @@ def process_cancel_orders(posted_after, posted_before):
                                 cq.sku = order_item.get('SellerSKU','')
                                 cq.buyer_cancel_date = datetime.now()
                                 cq.purchase_date = datetime.strptime(order.get('PurchaseDate'), "%Y-%m-%dT%H:%M:%SZ")
+                                cq.last_processed_at = datetime.now()
                                 cq.desktopshipper_cancel = 0
                                 cq.skubana_cancel = 0
                                 cq.amazon_cancel = 0
                                 cq.buyer_cancellation_reason = buyer_cancellation_reason
+                                cq.processing_status = 'PENDING'
                                 cq.created_at = datetime.now(),
                                 cq.updated_at = datetime.now(),
                                 conn.merge(cq)
