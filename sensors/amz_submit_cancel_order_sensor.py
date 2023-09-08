@@ -11,7 +11,7 @@ load_dotenv()
 my_logger = get_dagster_logger()
 
 
-@sensor(job_name="amz_submit_cancel_orders", minimum_interval_seconds=600)
+@sensor(job_name="amz_submit_cancel_orders", minimum_interval_seconds=60)
 def process_submit_cancel_orders():
     orders_list = (
         conn.query(CancelQueue.order_number)
@@ -35,7 +35,7 @@ def process_submit_cancel_orders():
         item_list = (
             conn.query(
                 CancelQueue.cancel_id,
-                CancelQueue.order_item_number,
+                CancelQueue.order_item_id,
                 CancelQueue.buyer_cancellation_reason
             )
             .where(
@@ -46,7 +46,7 @@ def process_submit_cancel_orders():
         for item in item_list:
             order_items.append({
                 "cancel_id": item.cancel_id,
-                "order_item_number": item.order_item_number,
+                "order_item_id": item.order_item_id,
                 "buyer_cancellation_reason": item.buyer_cancellation_reason
             })
         result.append({

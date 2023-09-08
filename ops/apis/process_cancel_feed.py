@@ -29,31 +29,29 @@ def process_cancels(context):
             order_number = list(cq.keys())[0]
             my_logger.info("Cancel {}:  CQ: {}".format(cancels, order_number))
 
-            feed_body = f"""
-            <AmazonEnvelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:noNamespaceSchemaLocation="amzn-envelope.xsd">
-            <Header>
+            feed_body = f"""<?xml version="1.0" encoding="utf-8"?>
+            <AmazonEnvelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd">
+                <Header>
                     <DocumentVersion>1.01</DocumentVersion>
                     <MerchantIdentifier>{os.getenv("seller_id")}</MerchantIdentifier>
-            </Header>
-            <MessageType>OrderAcknowledgement</MessageType>
-            <Message>
+                </Header>
+                <MessageType>OrderAcknowledgement</MessageType>
+                <Message>
                     <MessageID>1</MessageID>
                     <OrderAcknowledgement>
-                    <AmazonOrderID>{order_number}</AmazonOrderID>
-                    <StatusCode>Failure</StatusCode>"""
+                        <AmazonOrderID>{order_number}</AmazonOrderID>
+                        <StatusCode>Failure</StatusCode>"""
             for item in cq[order_number]:
                 cancel_ids.append(item.get('cancel_id'))
                 feed_body += f"""
-                    <Item>
-                        <AmazonOrderItemCode>{item.get('order_item_number')}</AmazonOrderItemCode>
-                        <CancelReason>{item.get('buyer_cancellation_reason')}</CancelReason>
-                    </Item>"""
-            feed_body += f"""
+                <Item>
+                    <AmazonOrderItemCode>{item.get('order_item_id')}</AmazonOrderItemCode>
+                    <CancelReason>BuyerCanceled</CancelReason>
+                </Item>"""
+            feed_body += """
                     </OrderAcknowledgement>
-            </Message>
-            </AmazonEnvelope>
-            """
+                </Message>
+            </AmazonEnvelope>"""
             feed_body = feed_body.encode('utf-8')
 
             submission_id = submit_order_feed.submit_feed(feed_body)
