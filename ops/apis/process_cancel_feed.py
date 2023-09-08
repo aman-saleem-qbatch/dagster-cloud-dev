@@ -77,6 +77,8 @@ def process_cancels(context):
                         .where(CancelQueue.cancel_id.in_(tuple(cancel_ids)))
                         .values(
                             amazon_cancel=1,
+                            processing_status=resp.get('status'),
+                            error_message='',
                             last_processed_at=datetime.now(),
                             updated_at=datetime.now()
                         )
