@@ -56,6 +56,7 @@ def sync_missing_asins(context, response):
             my_logger.info(f'missing asins {len(rows)}')
             i = 0
             added = 0
+            my_logger.info(f"TOTAL RECORDS {len(rows)}")
             for row in rows:
                 i += 1
 

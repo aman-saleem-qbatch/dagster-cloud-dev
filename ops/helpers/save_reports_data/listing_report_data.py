@@ -1,9 +1,10 @@
 import numpy as np
 from datetime import datetime
 from sqlalchemy import select, delete
-from ...helpers.db_config import db_conn
 from models.amazon_inventory_report import AmazonInventoryReport
 from ops.helpers.bulk_insert import bulk_insert
+from ...helpers.db_config import db_conn
+from ... import  pacific_zone
 
 conn = db_conn()
 
@@ -23,8 +24,8 @@ def save_listing_report(report_df, data):
     inventory_list = []
     for report in report_dict:
         s_sku = list(report.values())
-        s_sku.append(datetime.now())
-        s_sku.append(datetime.now())
+        s_sku.append(datetime.now(pacific_zone))
+        s_sku.append(datetime.now(pacific_zone))
         s_sku.append(data['marketplace_id'])
         inventory_list.append(tuple(s_sku))
     inventory_list_keys = list(report_dict[0].keys())

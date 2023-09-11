@@ -11,7 +11,5 @@ def db_conn():
         os.getenv("db_server"),
         os.getenv("db_dbname")
     ), echo=False)
-
     Session = sessionmaker(bind=engine)
-
     return Session()

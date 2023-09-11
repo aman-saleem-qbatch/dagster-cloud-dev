@@ -6,7 +6,7 @@ from sp_api.api import ReportsV2
 from ops.helpers import credentials
 from ops.helpers.db_config import db_conn
 from models.reports_processing_consumer import ReportsProcessingConsumer
-from .. import my_logger, retry_if_error, SP_EXCEPTIONS
+from .. import my_logger, retry_if_error, SP_EXCEPTIONS, pacific_zone
 
 conn = db_conn()
 
@@ -35,8 +35,8 @@ def request_open_listing_report():
                 seller_id=os.getenv("seller_id"),
                 report_type=data["report_type"],
                 marketplace_id=data["marketplace_id"],
-                created_at=datetime.now(),
-                updated_at=datetime.now()
+                created_at=datetime.now(pacific_zone),
+                updated_at=datetime.now(pacific_zone)
             )
             conn.add(report_data)
             conn.commit()

@@ -1,3 +1,4 @@
+import pytz
 from dotenv import load_dotenv
 from dagster import get_dagster_logger
 from requests import exceptions
@@ -10,6 +11,7 @@ from sp_api.base.exceptions import (
     SellingApiGatewayTimeoutException
 )
 
+pacific_zone = pytz.timezone('US/Pacific')
 
 load_dotenv()
 

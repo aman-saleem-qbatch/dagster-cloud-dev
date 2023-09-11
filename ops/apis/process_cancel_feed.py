@@ -6,7 +6,7 @@ from sqlalchemy import update
 from models.cancel_queue import CancelQueue
 from ops.apis.helpers import submit_order_feed, check_feed_status
 from ..helpers.db_config import db_conn
-from .. import my_logger
+from .. import my_logger, pacific_zone
 
 conn = db_conn()
 
@@ -61,8 +61,8 @@ def process_cancels(context):
                     .where(CancelQueue.order_number == order_number)
                     .values(
                         processing_status='IN PROGRESS',
-                        amazon_cancel_date = datetime.now(),
-                        updated_at=datetime.now()
+                        amazon_cancel_date = datetime.now(pacific_zone),
+                        updated_at=datetime.now(pacific_zone)
                     )
                 )
                 conn.execute(stmt)
@@ -79,8 +79,8 @@ def process_cancels(context):
                             amazon_cancel=1,
                             processing_status=resp.get('status'),
                             error_message='',
-                            last_processed_at=datetime.now(),
-                            updated_at=datetime.now()
+                            last_processed_at=datetime.now(pacific_zone),
+                            updated_at=datetime.now(pacific_zone)
                         )
                     )
                     conn.execute(update_stmt)
@@ -90,10 +90,10 @@ def process_cancels(context):
                         update(CancelQueue)
                         .where(CancelQueue.cancel_id.in_(tuple(cancel_ids)))
                         .values(
-                            last_processed_at=datetime.now() + timedelta(hours=2),
+                            last_processed_at=datetime.now(pacific_zone) + timedelta(hours=2),
                             processing_status=resp.get('status'),
                             error_message=resp.get('error_message'),
-                            updated_at=datetime.now()
+                            updated_at=datetime.now(pacific_zone)
                         )
                     )
                     conn.execute(update_stmt)

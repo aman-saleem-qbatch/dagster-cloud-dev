@@ -5,7 +5,7 @@ from models.last_updated_tracker import LastUpdatedTracker
 from sqlalchemy import insert, update, select
 from .get_orders import get_orders
 from .get_orders_items import get_orders_items
-from ... import my_logger, SP_EXCEPTIONS
+from ... import my_logger, SP_EXCEPTIONS, pacific_zone
 from ...helpers.db_config import db_conn
 
 conn = db_conn()
@@ -19,7 +19,7 @@ And Updating the Amazon Orders Cancel Queue Based on order's is_buyer_requested_
 def process_cancel_orders(posted_after, posted_before):
     try:
         my_logger.info(
-            f"posted_after {posted_after} | posted_before {posted_before} | Datetime Now {(datetime.now()).isoformat()}"
+            f"posted_after {posted_after} | posted_before {posted_before} | Datetime Now in PacificTime {(datetime.now(pacific_zone)).isoformat()}"
         )
         time.sleep(3)
         orders = get_orders(
@@ -57,16 +57,16 @@ def process_cancel_orders(posted_after, posted_before):
                                 cq = CancelQueue(order.get('AmazonOrderId',''))
                                 cq.order_item_id = order_item.get('OrderItemId','')
                                 cq.sku = order_item.get('SellerSKU','')
-                                cq.buyer_cancel_date = datetime.now()
+                                cq.buyer_cancel_date = datetime.now(pacific_zone)
                                 cq.purchase_date = datetime.strptime(order.get('PurchaseDate'), "%Y-%m-%dT%H:%M:%SZ")
-                                cq.last_processed_at = datetime.now()
+                                cq.last_processed_at = datetime.now(pacific_zone)
                                 cq.desktopshipper_cancel = 0
                                 cq.skubana_cancel = 0
                                 cq.amazon_cancel = 0
                                 cq.buyer_cancellation_reason = buyer_cancellation_reason
                                 cq.processing_status = 'PENDING'
-                                cq.created_at = datetime.now(),
-                                cq.updated_at = datetime.now(),
+                                cq.created_at = datetime.now(pacific_zone)
+                                cq.updated_at = datetime.now(pacific_zone)
                                 conn.merge(cq)
                                 conn.commit()
                             else:
@@ -87,8 +87,8 @@ def process_cancel_orders(posted_after, posted_before):
                     .values(
                         tracker_type="orders",
                         last_updated_at=datetime.strptime(last_purchase_date, "%Y-%m-%dT%H:%M:%SZ"),
-                        created_at=datetime.now(),
-                        updated_at=datetime.now()
+                        created_at=datetime.now(pacific_zone),
+                        updated_at=datetime.now(pacific_zone)
                     )
                 )
                 conn.execute(stmt)
@@ -99,7 +99,7 @@ def process_cancel_orders(posted_after, posted_before):
                     .where(LastUpdatedTracker.tracker_type == "orders")
                     .values(
                         last_updated_at=datetime.strptime(last_purchase_date, "%Y-%m-%dT%H:%M:%SZ"),
-                        updated_at=datetime.now()
+                        updated_at=datetime.now(pacific_zone)
                     )
                 )
                 conn.execute(stmt)
