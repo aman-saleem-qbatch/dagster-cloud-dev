@@ -1,0 +1,6 @@
+# dagster_cloud.yaml
+
+locations:
+  - location_name: amz_order_canceller_jobs
+    code_source:
+      python_file: ./repositories/jobs_repo.py
